@@ -1,0 +1,30 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "codelldb",
+			"request": "launch",
+			"name": "Debug",
+			"preLaunchTaskDap": "make debug-build",
+			"preLaunchTask": "compile",
+			"postDebugTask": "clean",
+			"expressions": "native",
+			"program": "${workspaceFolder}/bin/opengl",
+			"cwd": "${workspaceFolder}",
+			"runInTerminal": false,
+			"stopAtEntry": false
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug [VSCode]",
+			"preLaunchTask": "compile",
+			"postDebugTask": "clean",
+			"expressions": "native",
+			"program": "${workspaceFolder}/bin/opengl",
+			"cwd": "${workspaceFolder}",
+			"runInTerminal": false,
+			"stopAtEntry": false
+		}
+	]
+}
