@@ -3,13 +3,11 @@
 
 #include <GL/glew.h>
 
-typedef struct {
-    GLuint ID;
-} ebo_t;
+typedef GLuint ebo_t;
 
-ebo_t *ebo_new(GLuint *indices, GLsizeiptr size);
-void ebo_bind(ebo_t *ebo);
+ebo_t ebo_new(GLuint *indices, GLsizeiptr size);
+void ebo_bind(ebo_t ebo_id);
 void ebo_unbind(void);
-void ebo_delete(ebo_t **ebo);
+void ebo_delete(ebo_t ebo_id);
 
 #endif // !EBO_H

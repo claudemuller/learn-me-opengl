@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <GL/glew.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,4 +40,13 @@ char *get_file_contents(const char *filename)
     fclose(fd);
 
     return buf;
+}
+
+void check_gl_error(char *fn_name)
+{
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        fprintf(stderr, "OpenGL Error after %s: %d\n", fn_name, error);
+        exit(1);
+    }
 }

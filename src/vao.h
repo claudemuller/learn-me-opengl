@@ -4,14 +4,12 @@
 #include "vbo.h"
 #include <GL/glew.h>
 
-typedef struct {
-    GLuint ID;
-} vao_t;
+typedef GLuint vao_t;
 
-vao_t *vao_new(void);
-void vao_link_vbo(vbo_t *vbo, GLuint layout);
-void vao_bind(vao_t *vao);
+vao_t vao_new(void);
+void vao_link_vbo(vbo_t vbo_id, GLuint layout);
+void vao_bind(vao_t vao_id);
 void vao_unbind(void);
-void vao_delete(vao_t **vao);
+void vao_delete(vao_t vao_id);
 
 #endif // !VAO_H

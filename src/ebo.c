@@ -1,29 +1,27 @@
 #include "ebo.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "utils.h"
 
 // ebo_new creates a new Vertex Buffer Object in memory and expects the caller to free said memory.
-ebo_t *ebo_new(GLuint *indices, GLsizeiptr size)
+ebo_t ebo_new(GLuint *indices, GLsizeiptr size)
 {
-    ebo_t *ebo = malloc(sizeof(ebo_t));
-    if (!ebo) {
-        fprintf(stderr, "Error allocating memory for EBO\n");
-        return NULL;
-    }
+    ebo_t ebo_id;
 
     // The index buffer contains indices that tell OpenGL in which order to draw the indices
-    glGenBuffers(1, &ebo->ID);
+    glGenBuffers(1, &ebo_id);
+    check_gl_error("ebo->glGenBuffers");
 
     // Bind the index buffer i.e. make it current
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->ID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id);
+    check_gl_error("ebo->glBindBuffer");
 
     // Link the EBO buffer to the indices array
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+    check_gl_error("ebo->glBufferData");
 
-    return ebo;
+    return ebo_id;
 }
 
-void ebo_bind(ebo_t *ebo) { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->ID); }
+void ebo_bind(ebo_t ebo_id) { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id); }
 
 void ebo_unbind(void)
 {
@@ -33,9 +31,4 @@ void ebo_unbind(void)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void ebo_delete(ebo_t **ebo)
-{
-    glDeleteBuffers(1, &((*ebo)->ID));
-    free(*ebo);
-    *ebo = NULL;
-}
+void ebo_delete(ebo_t ebo_id) { glDeleteBuffers(1, &ebo_id); }

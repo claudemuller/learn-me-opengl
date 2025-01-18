@@ -1,29 +1,27 @@
 #include "vbo.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "utils.h"
 
 // vbo_new creates a new Vertex Buffer Object in memory.
-vbo_t *vbo_new(GLfloat *vertices, GLsizeiptr size)
+vbo_t vbo_new(GLfloat *vertices, GLsizeiptr size)
 {
-    // // Create a Vertex Buffer Object in which to store vertex data to be sent to GPU
-    vbo_t *vbo = malloc(sizeof(vbo_t));
-    if (!vbo) {
-        fprintf(stderr, "Error allocating memory for VBO\n");
-        return NULL;
-    }
+    // Create a Vertex Buffer Object in which to store vertex data to be sent to GPU
+    vbo_t vbo_id;
 
-    glGenBuffers(1, &vbo->ID);
+    glGenBuffers(1, &vbo_id);
+    check_gl_error("vbo->glGenBuffers");
 
     // Binding an object makes it the current context on which operations will execute
-    glBindBuffer(GL_ARRAY_BUFFER, vbo->ID); // GL_ARRAY_BUFFER is the type needed for vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id); // GL_ARRAY_BUFFER is the type needed for vertex buffer
+    check_gl_error("vbo->glBindBuffer");
 
     // Put the vertex data into the buffer
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    check_gl_error("vbo->glBufferData");
 
-    return vbo;
+    return vbo_id;
 }
 
-void vbo_bind(vbo_t *vbo) { glBindBuffer(GL_ARRAY_BUFFER, vbo->ID); }
+void vbo_bind(vbo_t vbo_id) { glBindBuffer(GL_ARRAY_BUFFER, vbo_id); }
 
 void vbo_unbind(void)
 {
@@ -31,9 +29,4 @@ void vbo_unbind(void)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void vbo_delete(vbo_t **vbo)
-{
-    glDeleteBuffers(1, &((*vbo)->ID));
-    free(*vbo);
-    *vbo = NULL;
-}
+void vbo_delete(vbo_t vbo_id) { glDeleteBuffers(1, &vbo_id); }

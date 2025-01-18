@@ -61,17 +61,17 @@ int main(void)
     // x, y of bottom left of window -> x, y of top right of the window
     glViewport(0, 0, 800, 800);
 
-    shader_t *shader_program = shader_new("res/shaders/default.vert", "res/shaders/default.frag");
+    shader_t shader_program = shader_new("res/shaders/default.vert", "res/shaders/default.frag");
     if (!shader_program) {
         fprintf(stderr, "Error creating shader program\n");
         exit(1);
     }
 
-    vao_t *vao1 = vao_new();
+    vao_t vao1 = vao_new();
     vao_bind(vao1);
 
-    vbo_t *vbo1 = vbo_new(vertices, sizeof(vertices) / sizeof(vertices[0]));
-    ebo_t *ebo1 = ebo_new(indices, sizeof(indices) / sizeof(indices[0]));
+    vbo_t vbo1 = vbo_new(vertices, sizeof(vertices));
+    ebo_t ebo1 = ebo_new(indices, sizeof(indices));
 
     vao_link_vbo(vbo1, 0);
     vao_unbind();
@@ -102,10 +102,10 @@ int main(void)
     }
 
     // Delete objects
-    vao_delete(&vao1);
-    vbo_delete(&vbo1);
-    ebo_delete(&ebo1);
-    shader_delete(&shader_program);
+    vao_delete(vao1);
+    vbo_delete(vbo1);
+    ebo_delete(ebo1);
+    shader_delete(shader_program);
 
     // Destroy the window
     glfwDestroyWindow(window);
