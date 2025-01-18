@@ -6,7 +6,8 @@
 #include <GL/glew.h>
 #include <GL/glext.h>
 #include <GLFW/glfw3.h>
-#include <math.h>
+#include <stb/stb_image.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,19 +15,16 @@ int main(void)
 {
     // clang-format off
     GLfloat vertices[] = {
-            // Co-ords are between -1 and 1 -      Coords               |        Colours
-            -0.5f,   -0.5f * sqrtf(3.0f) / 3,      0.0f,  0.8f,  0.3f ,  0.02f, // Left corner
-             0.5f,   -0.5f * sqrtf(3.0f) / 3,      0.0f,  0.8f, 0.3f,  0.02f, // Right corner
-            0.0f,   0.5f * sqrtf(3.0f) * 2 / 3, 0.0f, 1.0f, 0.6f,  0.32f, // Top corner
-           -0.25f,  0.5f * sqrtf(3.0f) / 6,     0.0f, 0.9f, 0.45f, 0.17f, // Left corner
-            0.25f,  0.5f * sqrtf(3.0f) / 6,     0.0f, 0.9f, 0.45f, 0.17f, // Right corner
-            0.0f,  -0.5f * sqrtf(3.0f) / 3,     0.0f, 0.8f, 0.3f,  0.02f, // Top corner
+     //     COORDINATES     /        COLORS      /   TexCoord  //
+	-0.5f,  -0.5f,   0.0f,      1.0f,  0.0f,  0.0f,      0.0f,  0.0f, // Lower left corner
+	-0.5f,  0.5f,   0.0f,     0.0f, 1.0f, 0.0f,     0.0f, 1.0f, // Upper left corner
+	0.5f,  0.5f,  0.0f,     0.0f, 0.0f, 1.0f,     1.0f, 1.0f, // Upper right corner
+	0.5f,  -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,     1.0f, 0.0f  // Lower right corner
     };
 
     GLuint indices[] = {
-        0, 3, 5, // Lower left triangle
-        3, 2, 4, // Lower right triangle
-        5, 4, 1  // Upper triangle
+        0, 2, 1, // Upper triangle
+        0, 3, 2  // Lower triangle
     };
     // clang-format on
 
@@ -77,8 +75,9 @@ int main(void)
     ebo_t ebo1 = ebo_new(indices, sizeof(indices));
 
     // Links VBO to VAO
-    vao_link_attr(vbo1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void *)0);
-    vao_link_attr(vbo1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    vao_link_attr(vbo1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void *)0);
+    vao_link_attr(vbo1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    vao_link_attr(vbo1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 
     // Unbind all to prevent accidentially modifying them
     vao_unbind();
@@ -86,7 +85,54 @@ int main(void)
     ebo_unbind();
 
     GLuint uni_id = glGetUniformLocation(shader_program, "scale");
-    check_gl_error("main->glGetUniformLocation");
+    check_gl_error("main->glGetUniformLocation(scale)");
+
+    int img_w, img_h, img_num_col_chans;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *bytes = stbi_load("res/image.jpg", &img_w, &img_h, &img_num_col_chans, 0);
+    if (!bytes) {
+        fprintf(stderr, "Error loading texture\n");
+        exit(1);
+    }
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    check_gl_error("main->glGenTextures");
+    glActiveTexture(GL_TEXTURE0);
+    check_gl_error("main->glActiveTexture");
+    glBindTexture(GL_TEXTURE_2D, texture);
+    check_gl_error("main->glBindTexture");
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    check_gl_error("main->glTexParameteri(GL_TEXTURE_MIN_FILTER)");
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    check_gl_error("main->glTexParameteri(GL_TEXTURE_MAG_FILTER)");
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    check_gl_error("main->glTexParameteri(GL_TEXTURE_WRAP_S)");
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    check_gl_error("main->glTexParameteri(GL_TEXTURE_WRAP_T)");
+
+    // float flat_colour[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, flat_colour);
+
+    // For .png
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_w, img_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+    // For .jpg
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_w, img_h, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+    check_gl_error("main->glTexImage2D");
+    glGenerateMipmap(GL_TEXTURE_2D);
+    check_gl_error("main->glGenerateMipmap");
+
+    stbi_image_free(bytes);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    check_gl_error("main->glBindTexture");
+
+    GLuint uni_tex0 = glGetUniformLocation(shader_program, "tex0");
+    check_gl_error("main->glGetUniformLocation(tex0)");
+    shader_activate(shader_program);
+    glUniform1i(uni_tex0, 0);
+    check_gl_error("main->glUniform1f(tex0)");
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -96,7 +142,9 @@ int main(void)
         shader_activate(shader_program);
 
         glUniform1f(uni_id, 0.5f);
-        check_gl_error("main->glUniform1f");
+        // check_gl_error("main->glUniform1f(scale)");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        // check_gl_error("main->glBindTexture");
 
         // Bind to VAO to tell OpenGL which is the current VAO (optional here because we only have 1)
         vao_bind(vao1);
@@ -105,7 +153,7 @@ int main(void)
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // Draw using the EBO
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Swap front and back buffers to update the image on each frame
         glfwSwapBuffers(window);
@@ -118,6 +166,7 @@ int main(void)
     vao_delete(vao1);
     vbo_delete(vbo1);
     ebo_delete(ebo1);
+    glDeleteTextures(1, &texture);
     shader_delete(shader_program);
 
     // Destroy the window

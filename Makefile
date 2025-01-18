@@ -10,7 +10,7 @@ CFLAGS += -Wmissing-declarations
 CFLAGS += -I./libs/
 ASANFLAGS=-fsanitize=address -fno-common -fno-omit-frame-pointer
 CFLAGS += $(shell pkg-config --cflags sdl2 glfw3 gl glew)
-LDFLAGS := $(shell pkg-config --libs sdl2 glfw3 gl glew)
+LDFLAGS := $(shell pkg-config --libs sdl2 glfw3 gl glew) -lm
 LIBS := -I./lib
 SRC_FILES := $(wildcard ./src/*.c)
 BIN_DIR := ./bin
