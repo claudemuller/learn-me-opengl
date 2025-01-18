@@ -74,12 +74,12 @@ void shader_delete(shader_t shader_id) { glDeleteProgram(shader_id); }
 // Checks for shader compilation errors.
 static void check_shader_compile(GLuint shader)
 {
-    GLint success;
-    GLchar info_log[512];
+    GLint compiled;
+    GLchar info_log[1024];
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(shader, 512, NULL, info_log);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+    if (compiled == GL_FALSE) {
+        glGetShaderInfoLog(shader, 1024, NULL, info_log);
         fprintf(stderr, "Shader compilation failed: %s\n", info_log);
         exit(1);
     }
@@ -88,12 +88,12 @@ static void check_shader_compile(GLuint shader)
 // Checks for program linking errors.
 static void check_program_link(GLuint program)
 {
-    GLint success;
-    GLchar info_log[512];
+    GLint linked;
+    GLchar info_log[1024];
 
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(program, 512, NULL, info_log);
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+    if (linked == GL_FALSE) {
+        glGetProgramInfoLog(program, 1024, NULL, info_log);
         fprintf(stderr, "Program linking failed: %s\n", info_log);
         exit(1);
     }

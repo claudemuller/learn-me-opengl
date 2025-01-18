@@ -7,7 +7,7 @@
 typedef GLuint vao_t;
 
 vao_t vao_new(void);
-void vao_link_vbo(vbo_t vbo_id, GLuint layout);
+void vao_link_attr(vbo_t vbo_id, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset);
 void vao_bind(vao_t vao_id);
 void vao_unbind(void);
 void vao_delete(vao_t vao_id);

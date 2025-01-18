@@ -15,12 +15,12 @@ vao_t vao_new(void)
     return vao_id;
 }
 
-void vao_link_vbo(vbo_t vbo, GLuint layout)
+void vao_link_attr(vbo_t vbo_id, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void *offset)
 {
-    vbo_bind(vbo);
+    vbo_bind(vbo_id);
 
     // A vertex attribute is a way to communicate to a vertex shader
-    glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
     check_gl_error("vao->glVertexAttribPointer");
 
     glEnableVertexAttribArray(layout);

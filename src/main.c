@@ -1,5 +1,6 @@
 #include "ebo.h"
 #include "shader.h"
+#include "utils.h"
 #include "vao.h"
 #include "vbo.h"
 #include <GL/glew.h>
@@ -13,13 +14,13 @@ int main(void)
 {
     // clang-format off
     GLfloat vertices[] = {
-            // Co-ords are between -1 and 1
-            -0.5f,     -0.5f * sqrtf(3.0f) / 3, 0.0f, // Left corner
-             0.5f,     -0.5f * sqrtf(3.0f) / 3, 0.0f, // Right corner
-             0.0f,      0.5f * sqrtf(3.0f) * 2 / 3, 0.0f, // Top corner
-            -0.5f / 2, 0.5f * sqrtf(3.0f) / 6, 0.0f, // Left corner
-            0.5f / 2, 0.5f * sqrtf(3.0f) / 6, 0.0f, // Right corner
-            0.0f,    -0.5f * sqrtf(3.0f) / 3, 0.0f, // Top corner
+            // Co-ords are between -1 and 1 -      Coords               |        Colours
+            -0.5f,   -0.5f * sqrtf(3.0f) / 3,      0.0f,  0.8f,  0.3f ,  0.02f, // Left corner
+             0.5f,   -0.5f * sqrtf(3.0f) / 3,      0.0f,  0.8f, 0.3f,  0.02f, // Right corner
+            0.0f,   0.5f * sqrtf(3.0f) * 2 / 3, 0.0f, 1.0f, 0.6f,  0.32f, // Top corner
+           -0.25f,  0.5f * sqrtf(3.0f) / 6,     0.0f, 0.9f, 0.45f, 0.17f, // Left corner
+            0.25f,  0.5f * sqrtf(3.0f) / 6,     0.0f, 0.9f, 0.45f, 0.17f, // Right corner
+            0.0f,  -0.5f * sqrtf(3.0f) / 3,     0.0f, 0.8f, 0.3f,  0.02f, // Top corner
     };
 
     GLuint indices[] = {
@@ -70,13 +71,22 @@ int main(void)
     vao_t vao1 = vao_new();
     vao_bind(vao1);
 
+    // Create Vertex Buffer Object and link to vertices
     vbo_t vbo1 = vbo_new(vertices, sizeof(vertices));
+    // Create Element Buffer Object and link to indices
     ebo_t ebo1 = ebo_new(indices, sizeof(indices));
 
-    vao_link_vbo(vbo1, 0);
+    // Links VBO to VAO
+    vao_link_attr(vbo1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void *)0);
+    vao_link_attr(vbo1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+
+    // Unbind all to prevent accidentially modifying them
     vao_unbind();
     vbo_unbind();
     ebo_unbind();
+
+    GLuint uni_id = glGetUniformLocation(shader_program, "scale");
+    check_gl_error("main->glGetUniformLocation");
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -84,6 +94,9 @@ int main(void)
 
         // Activate the shader program
         shader_activate(shader_program);
+
+        glUniform1f(uni_id, 0.5f);
+        check_gl_error("main->glUniform1f");
 
         // Bind to VAO to tell OpenGL which is the current VAO (optional here because we only have 1)
         vao_bind(vao1);
