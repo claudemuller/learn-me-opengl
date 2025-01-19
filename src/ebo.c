@@ -25,7 +25,7 @@ void ebo_bind(ebo_t ebo_id) { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id); }
 
 void ebo_unbind(void)
 {
-    // // Unbind the EBO *after* the VAO because the EBO is stored inside the VAO
+    // NOTE: Unbind the EBO *after* the VAO because the EBO is stored inside the VAO
     // If you accidentally unbind the EBO before the VAO you're telling OpenGL that you don't want the
     // VAO to use the EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

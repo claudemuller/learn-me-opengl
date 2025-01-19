@@ -32,7 +32,7 @@ void vao_bind(vao_t vao_id) { glBindVertexArray(vao_id); }
 
 void vao_unbind(void)
 {
-    // Unbind the VAO *after* to not accidentally write to them
+    // NOTE: Unbind the VAO *after* to not accidentally write to them
     glBindVertexArray(0);
 }
 

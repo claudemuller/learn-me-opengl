@@ -25,7 +25,7 @@ void vbo_bind(vbo_t vbo_id) { glBindBuffer(GL_ARRAY_BUFFER, vbo_id); }
 
 void vbo_unbind(void)
 {
-    // Unbind the VBO *first*, to not accidentally write to them
+    // NOTE: Unbind the VBO *first*, to not accidentally write to them
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

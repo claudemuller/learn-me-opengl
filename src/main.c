@@ -85,32 +85,38 @@ int main(void)
     vbo_unbind();
     ebo_unbind();
 
+    // Gets ID of uniform called "scale"
     GLuint uni_id = glGetUniformLocation(shader_program, "scale");
     check_gl_error("main->glGetUniformLocation(scale)");
 
+    // Create a texture
     texture_t *meme_thing = texture_new("res/image.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
     meme_thing->unit(shader_program, "tex0", 0);
 
     while (!glfwWindowShouldClose(window)) {
+        // Background colour
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+        // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Activate the shader program
+        // Activate the shader program i.e. tell OpenGL which Shader Program it should use
         shader_activate(shader_program);
 
+        // Assigns a value to the uniform
+        // NOTE: Must always be done after activating the Shader Program
         glUniform1f(uni_id, 0.5f);
         // check_gl_error("main->glUniform1f(scale)");
 
-        // texture_bind(*meme_thing);
+        // Binds texture so that is appears in rendering
         meme_thing->bind(meme_thing);
 
-        // Bind to VAO to tell OpenGL which is the current VAO (optional here because we only have 1)
+        // Bind to VAO to tell OpenGL which is the current VAO
         vao_bind(vao1);
 
         // Draw using the array of vertices i.e. without the EBO
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        // Draw using the EBO
+        // Draw primitives, number of indices, datatype of indices, index of indices using EBO
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Swap front and back buffers to update the image on each frame
