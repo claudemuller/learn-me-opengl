@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// get_file_contents reads in the contents of a text file unbuffered, allocates space in
+// get_file_contents reads in the contents of a text file, allocates space in
 // memory where it puts the contents and expects the caller to free said memory.
 char *get_file_contents(const char *filename)
 {
