@@ -1,5 +1,5 @@
-#ifndef VAO_H
-#define VAO_H
+#ifndef VAO_H_
+#define VAO_H_
 
 #include "vbo.h"
 #include <GL/glew.h>
@@ -12,4 +12,4 @@ void vao_bind(vao_t vao_id);
 void vao_unbind(void);
 void vao_delete(vao_t vao_id);
 
-#endif // !VAO_H
+#endif // !VAO_H_

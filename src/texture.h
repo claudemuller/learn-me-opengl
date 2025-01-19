@@ -1,5 +1,5 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef TEXTURE_H_
+#define TEXTURE_H_
 
 #include "shader.h"
 #include <GL/glew.h>
@@ -17,4 +17,4 @@ typedef struct texture_t {
 
 texture_t *texture_new(const char *image, GLenum tex_type, GLenum slot, GLenum format, GLenum pixel_type);
 
-#endif // !TEXTURE_H
+#endif // !TEXTURE_H_

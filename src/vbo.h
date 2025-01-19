@@ -1,5 +1,5 @@
-#ifndef VBO_H
-#define VBO_H
+#ifndef VBO_H_
+#define VBO_H_
 
 #include <GL/glew.h>
 
@@ -10,4 +10,4 @@ void vbo_bind(vbo_t vbo_id);
 void vbo_unbind(void);
 void vbo_delete(vbo_t vbo_id);
 
-#endif // !VBO_H
+#endif // !VBO_H_

@@ -1,5 +1,5 @@
-#ifndef EBO_H
-#define EBO_H
+#ifndef EBO_H_
+#define EBO_H_
 
 #include <GL/glew.h>
 
@@ -10,4 +10,4 @@ void ebo_bind(ebo_t ebo_id);
 void ebo_unbind(void);
 void ebo_delete(ebo_t ebo_id);
 
-#endif // !EBO_H
+#endif // !EBO_H_
