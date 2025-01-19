@@ -1,5 +1,6 @@
 #include "ebo.h"
 #include "shader.h"
+#include "texture.h"
 #include "utils.h"
 #include "vao.h"
 #include "vbo.h"
@@ -87,52 +88,8 @@ int main(void)
     GLuint uni_id = glGetUniformLocation(shader_program, "scale");
     check_gl_error("main->glGetUniformLocation(scale)");
 
-    int img_w, img_h, img_num_col_chans;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *bytes = stbi_load("res/image.jpg", &img_w, &img_h, &img_num_col_chans, 0);
-    if (!bytes) {
-        fprintf(stderr, "Error loading texture\n");
-        exit(1);
-    }
-
-    GLuint texture;
-    glGenTextures(1, &texture);
-    check_gl_error("main->glGenTextures");
-    glActiveTexture(GL_TEXTURE0);
-    check_gl_error("main->glActiveTexture");
-    glBindTexture(GL_TEXTURE_2D, texture);
-    check_gl_error("main->glBindTexture");
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    check_gl_error("main->glTexParameteri(GL_TEXTURE_MIN_FILTER)");
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    check_gl_error("main->glTexParameteri(GL_TEXTURE_MAG_FILTER)");
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    check_gl_error("main->glTexParameteri(GL_TEXTURE_WRAP_S)");
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    check_gl_error("main->glTexParameteri(GL_TEXTURE_WRAP_T)");
-
-    // float flat_colour[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, flat_colour);
-
-    // For .png
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_w, img_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-    // For .jpg
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_w, img_h, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-    check_gl_error("main->glTexImage2D");
-    glGenerateMipmap(GL_TEXTURE_2D);
-    check_gl_error("main->glGenerateMipmap");
-
-    stbi_image_free(bytes);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    check_gl_error("main->glBindTexture");
-
-    GLuint uni_tex0 = glGetUniformLocation(shader_program, "tex0");
-    check_gl_error("main->glGetUniformLocation(tex0)");
-    shader_activate(shader_program);
-    glUniform1i(uni_tex0, 0);
-    check_gl_error("main->glUniform1f(tex0)");
+    texture_t *meme_thing = texture_new("res/image.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+    meme_thing->unit(shader_program, "tex0", 0);
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
@@ -143,8 +100,9 @@ int main(void)
 
         glUniform1f(uni_id, 0.5f);
         // check_gl_error("main->glUniform1f(scale)");
-        glBindTexture(GL_TEXTURE_2D, texture);
-        // check_gl_error("main->glBindTexture");
+
+        // texture_bind(*meme_thing);
+        meme_thing->bind(meme_thing);
 
         // Bind to VAO to tell OpenGL which is the current VAO (optional here because we only have 1)
         vao_bind(vao1);
@@ -166,7 +124,7 @@ int main(void)
     vao_delete(vao1);
     vbo_delete(vbo1);
     ebo_delete(ebo1);
-    glDeleteTextures(1, &texture);
+    meme_thing->delete(&meme_thing);
     shader_delete(shader_program);
 
     // Destroy the window
