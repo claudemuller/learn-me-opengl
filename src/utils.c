@@ -8,36 +8,36 @@
 // memory where it puts the contents and expects the caller to free said memory.
 char *get_file_contents(const char *filename)
 {
-    FILE *fd = fopen(filename, "r");
-    if (!fd) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
         fprintf(stderr, "Error opening file: %s\n", filename);
         return NULL;
     }
 
     // Seek to end of file
-    fseek(fd, 0, SEEK_END);
+    fseek(fp, 0, SEEK_END);
     // Get the position at the end of the file i.e. the size
-    uint64_t fsize = ftell(fd);
-    rewind(fd);
+    uint64_t fsize = ftell(fp);
+    rewind(fp);
 
     // Allocate memory the same size as the size of the file plus a NULL terminator
     char *buf = (char *)malloc(fsize + 1);
     if (!buf) {
         fprintf(stderr, "Error allocating memory for file contents\n");
-        fclose(fd);
+        fclose(fp);
         return NULL;
     }
 
-    size_t bytes_read = fread(buf, 1, fsize, fd);
+    size_t bytes_read = fread(buf, 1, fsize, fp);
     if (bytes_read != fsize) {
         fprintf(stderr, "Failed to read the entire file\n");
         free(buf);
-        fclose(fd);
+        fclose(fp);
         return NULL;
     }
     buf[fsize] = '\0';
 
-    fclose(fd);
+    fclose(fp);
 
     return buf;
 }
